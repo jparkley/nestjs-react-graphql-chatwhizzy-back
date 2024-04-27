@@ -1,9 +1,8 @@
 import { Logger, NotFoundException } from '@nestjs/common';
-import { BaseDocument } from './base.schema';
+import { BaseEntity } from './base.entity';
 import { FilterQuery, Model, Types, UpdateQuery } from 'mongoose';
-import { NotFoundError } from 'rxjs';
 
-export abstract class BaseRepository<T extends BaseDocument> {
+export abstract class BaseRepository<T extends BaseEntity> {
   protected abstract readonly logger: Logger;
 
   constructor(protected readonly model: Model<T>) {}
