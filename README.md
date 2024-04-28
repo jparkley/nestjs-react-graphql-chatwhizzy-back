@@ -4,7 +4,9 @@ ChatWhizzy Backend in Nest.js, GraphQL, MongoDB
 
 # Features
 
-Implementing a Generic Repository Pattern for database transactions for encapsulation and maintainability
+Generic Repository Pattern for database transactions for encapsulation and maintainability
+Validation Pipe
+Development logger: Pino
 
 ## Description
 
