@@ -4,7 +4,7 @@ import { BaseEntity } from 'src/common/database/base.entity';
 
 @Schema({ versionKey: false }) // don't keep track of version change
 @ObjectType()
-export class UserEntity extends BaseEntity {
+export class User extends BaseEntity {
   @Prop()
   @Field()
   email: string;
@@ -13,4 +13,4 @@ export class UserEntity extends BaseEntity {
   password: string;
 }
 
-export const UserSchema = SchemaFactory.createForClass(UserEntity);
+export const UserSchema = SchemaFactory.createForClass(User);
