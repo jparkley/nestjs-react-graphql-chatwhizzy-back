@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import * as Joi from 'joi';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -23,15 +23,25 @@ import { LoggerModule } from 'nestjs-pino';
       autoSchemaFile: true,
     }),
     UsersModule,
-    LoggerModule.forRoot({
-      pinoHttp: {
-        transport: {
-          target: 'pino-pretty',
-          options: {
-            singleLine: true,
+    LoggerModule.forRootAsync({
+      useFactory: (configService: ConfigService) => {
+        const isProd = configService.get('NODE_ENV') === 'production';
+
+        return {
+          pinoHttp: {
+            transport: isProd
+              ? undefined
+              : {
+                  target: 'pino-pretty',
+                  options: {
+                    singleLine: true,
+                  },
+                },
+            level: isProd ? 'info' : 'debug',
           },
-        },
+        };
       },
+      inject: [ConfigService],
     }),
   ],
   controllers: [AppController],
