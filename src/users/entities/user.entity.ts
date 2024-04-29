@@ -5,7 +5,7 @@ import { BaseEntity } from 'src/common/database/base.entity';
 @Schema({ versionKey: false }) // don't keep track of version change
 @ObjectType()
 export class User extends BaseEntity {
-  @Prop()
+  @Prop({ index: true, unique: true })
   @Field()
   email: string;
 
