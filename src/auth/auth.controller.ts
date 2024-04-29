@@ -3,9 +3,11 @@ import { LocalGuard } from './guards/local-guard';
 import { CurrentUser } from './user.decorator';
 import { Response } from 'express';
 import { User } from 'src/users/entities/user.entity';
+import { AuthService } from './auth.service';
 
 @Controller('auth')
 export class AuthController {
+  constructor(private readonly authService: AuthService) {}
   @Post('login')
   @UseGuards(LocalGuard)
   // passthrough: true
@@ -14,5 +16,7 @@ export class AuthController {
   async login(
     @CurrentUser() user: User,
     @Res({ passthrough: true }) response: Response,
-  ) {}
+  ) {
+    return this.authService.login(user, response);
+  }
 }
