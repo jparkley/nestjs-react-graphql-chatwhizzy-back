@@ -3,6 +3,9 @@
 /node_modules
 /build
 
+# Others
+/z-temp
+
 # Logs
 logs
 *.log
