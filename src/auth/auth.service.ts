@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
 import { User } from 'src/users/entities/user.entity';
+import { TokeyData } from './auth-types';
 
 @Injectable()
 export class AuthService {
@@ -17,7 +18,7 @@ export class AuthService {
       expires.getSeconds() + this.configService.getOrThrow('JWT_EXPIRATION'),
     );
 
-    const tokenData: { _id: string; email: string } = {
+    const tokenData: TokeyData = {
       _id: user._id.toHexString(),
       email: user.email,
     };
