@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { Request } from 'express';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { TokeyData } from '../auth-types';
+import { UserDataForToken } from '../auth-types';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -18,7 +18,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   // proceed to this validate method
-  async validate(data: TokeyData) {
+  async validate(data: UserDataForToken) {
     return data;
   }
 }

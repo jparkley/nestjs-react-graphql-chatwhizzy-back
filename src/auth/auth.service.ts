@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
 import { User } from 'src/users/entities/user.entity';
-import { TokeyData } from './auth-types';
+import { UserDataForToken } from './auth-types';
 
 @Injectable()
 export class AuthService {
@@ -18,12 +18,12 @@ export class AuthService {
       expires.getSeconds() + this.configService.getOrThrow('JWT_EXPIRATION'),
     );
 
-    const tokenData: TokeyData = {
+    const data: UserDataForToken = {
       _id: user._id.toHexString(),
       email: user.email,
     };
 
-    const token = this.jwtService.sign(tokenData);
+    const token = this.jwtService.sign(data);
 
     response.cookie('Authentication', token, {
       httpOnly: true, // only during http requests
