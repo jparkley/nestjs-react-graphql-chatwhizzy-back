@@ -9,6 +9,12 @@ export class UsersService {
   constructor(private readonly userRepository: UserRepository) {}
 
   async create(createUserInput: CreateUserInput) {
+    const emailExists = await this.userRepository.findOne({
+      email: createUserInput.email,
+    });
+    if (emailExists) {
+      throw new Error('Email is already taken');
+    }
     return this.userRepository.create({
       ...createUserInput,
       password: await bcrypt.hash(createUserInput.password, 10),
