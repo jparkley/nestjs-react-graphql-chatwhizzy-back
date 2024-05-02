@@ -9,16 +9,17 @@ export class UsersService {
   constructor(private readonly userRepository: UserRepository) {}
 
   async create(createUserInput: CreateUserInput) {
-    const emailExists = await this.userRepository.findOne({
-      email: createUserInput.email,
-    });
-    if (emailExists) {
-      throw new Error('Email is already taken');
+    try {
+      const newUser = await this.userRepository.create({
+        ...createUserInput,
+        password: await bcrypt.hash(createUserInput.password, 10),
+      });
+      return newUser;
+    } catch (error) {
+      const message =
+        error.code == '11000' ? 'Email already exists' : error.message;
+      throw new Error(message);
     }
-    return this.userRepository.create({
-      ...createUserInput,
-      password: await bcrypt.hash(createUserInput.password, 10),
-    });
   }
 
   async findAll() {
