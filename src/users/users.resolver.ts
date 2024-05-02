@@ -29,6 +29,13 @@ export class UsersResolver {
     return this.usersService.findOne(_id);
   }
 
+  // Return a current(active) user for route protection on client
+  @UseGuards(GqlGuard)
+  @Query(() => User, { name: 'currentUser' })
+  getCurrentUser(@CurrentUser() user: UserDataForToken) {
+    return user;
+  }
+
   @Mutation(() => User)
   @UseGuards(GqlGuard)
   updateUser(
