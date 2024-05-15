@@ -19,8 +19,8 @@ export class Chat extends BaseEntity {
   @Field(() => [String])
   memberIds: string[];
 
-  @Prop({ nullable: true })
-  @Field()
+  @Prop()
+  @Field({ nullable: true })
   chatName?: string;
 }
 
