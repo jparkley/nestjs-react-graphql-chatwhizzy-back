@@ -19,7 +19,7 @@ export class ChatsService {
   }
 
   async findOne(_id: string) {
-    return await this.chatRepository.find({ _id });
+    return await this.chatRepository.findOne({ _id });
   }
 
   update(id: number, updateChatInput: UpdateChatInput) {
