@@ -11,6 +11,7 @@ export class ChatsService {
       ...createChatInput,
       creatorId: userId,
       memberIds: createChatInput.memberIds || [],
+      threads: [],
     });
   }
 
