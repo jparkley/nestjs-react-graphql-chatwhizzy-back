@@ -23,6 +23,9 @@ import { ChatsModule } from './chats/chats.module';
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: true,
+      subscriptions: {
+        'graphql-ws': true,
+      },
     }),
     UsersModule,
     LoggerModule.forRootAsync({
