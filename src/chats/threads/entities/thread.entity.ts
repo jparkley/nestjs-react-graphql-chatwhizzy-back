@@ -16,4 +16,8 @@ export class Thread extends BaseEntity {
   @Prop()
   @Field()
   createdAt: Date;
+
+  @Prop()
+  @Field()
+  chatId: string;
 }

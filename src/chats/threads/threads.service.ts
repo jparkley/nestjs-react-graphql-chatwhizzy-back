@@ -1,13 +1,18 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { ChatRepository } from '../chats.repository';
 import { CreateThreadInput } from './dto/create-thread.input';
 import { Thread } from './entities/thread.entity';
 import { Types } from 'mongoose';
 import { GetThreadsArgs } from './dto/get-threads.args';
+import { TOKEN_PUB_SUB, TRIGGER_ON_THREAD_CREATED } from 'src/constants';
+import { PubSub } from 'graphql-subscriptions';
 
 @Injectable()
 export class ThreadsService {
-  constructor(private readonly chatRepository: ChatRepository) {}
+  constructor(
+    private readonly chatRepository: ChatRepository,
+    @Inject(TOKEN_PUB_SUB) private readonly pubSub: PubSub,
+  ) {}
 
   async createThread({ content, chatId }: CreateThreadInput, userId: string) {
     const thread: Thread = {
@@ -15,6 +20,7 @@ export class ThreadsService {
       content,
       userId,
       createdAt: new Date(),
+      chatId,
     };
 
     await this.chatRepository.findOneAndUpdate(
@@ -28,6 +34,9 @@ export class ThreadsService {
         },
       },
     );
+    this.pubSub.publish(TRIGGER_ON_THREAD_CREATED, {
+      onThreadCreated: thread,
+    });
     return thread;
   }
 
