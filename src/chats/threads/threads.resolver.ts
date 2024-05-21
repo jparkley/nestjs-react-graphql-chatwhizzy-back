@@ -8,7 +8,7 @@ import { CurrentUser } from 'src/auth/user.decorator';
 import { UserDataForToken } from 'src/auth/auth-types';
 import { GetThreadsArgs } from './dto/get-threads.args';
 import { PubSub } from 'graphql-subscriptions';
-import { TOKEN_PUB_SUB, TRIGGER_ON_THREAD_CREATED } from 'src/constants';
+import { TOKEN_PUB_SUB } from 'src/constants';
 import { OnThreadCreatedArgs } from './dto/onThreadCreated.args';
 
 @Resolver(() => Thread)

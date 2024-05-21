@@ -30,7 +30,6 @@ export class ThreadsService {
       {
         _id: chatId,
         ...this.chatsService.filterUserForChat(userId),
-        // $or: [{ creatorId: userId }, { memberIds: { $in: [userId] } }],
       },
       {
         $push: {
@@ -49,12 +48,16 @@ export class ThreadsService {
       await this.chatRepository.findOne({
         _id: chatId,
         ...this.chatsService.filterUserForChat(userId),
-        // $or: [{ creatorId: userId }, { memberIds: { $in: [userId] } }],
       })
     ).threads;
   }
 
   async onThreadCreated({ chatId }: OnThreadCreatedArgs, userId: string) {
+    // verify if user has access to chat
+    await this.chatRepository.findOne({
+      _id: chatId,
+      ...this.chatsService.filterUserForChat(userId),
+    });
     return this.pubSub.asyncIterator(TRIGGER_ON_THREAD_CREATED);
   }
 }

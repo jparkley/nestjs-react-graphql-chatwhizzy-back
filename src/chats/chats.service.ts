@@ -15,8 +15,10 @@ export class ChatsService {
     });
   }
 
-  async findAll() {
-    return await this.chatRepository.find({});
+  async findAll(userId: string) {
+    return await this.chatRepository.find({
+      ...this.filterUserForChat(userId),
+    });
   }
 
   async findOne(_id: string) {
@@ -33,7 +35,11 @@ export class ChatsService {
 
   filterUserForChat(userId: string) {
     return {
-      $or: [{ creatorId: userId }, { memberIds: { $in: [userId] } }],
+      $or: [
+        { creatorId: userId },
+        { memberIds: { $in: [userId] } },
+        { isPrivate: false },
+      ],
     };
   }
 }
