@@ -17,6 +17,6 @@ import { ThreadsModule } from './threads/threads.module';
     forwardRef(() => ThreadsModule),
   ],
   providers: [ChatsResolver, ChatsService, ChatRepository],
-  exports: [ChatRepository],
+  exports: [ChatRepository, ChatsService],
 })
 export class ChatsModule {}

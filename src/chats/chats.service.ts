@@ -30,4 +30,10 @@ export class ChatsService {
   remove(id: number) {
     return `This action removes a #${id} chat`;
   }
+
+  filterUserForChat(userId: string) {
+    return {
+      $or: [{ creatorId: userId }, { memberIds: { $in: [userId] } }],
+    };
+  }
 }

@@ -6,11 +6,14 @@ import { Types } from 'mongoose';
 import { GetThreadsArgs } from './dto/get-threads.args';
 import { TOKEN_PUB_SUB, TRIGGER_ON_THREAD_CREATED } from 'src/constants';
 import { PubSub } from 'graphql-subscriptions';
+import { OnThreadCreatedArgs } from './dto/onThreadCreated.args';
+import { ChatsService } from '../chats.service';
 
 @Injectable()
 export class ThreadsService {
   constructor(
     private readonly chatRepository: ChatRepository,
+    private readonly chatsService: ChatsService,
     @Inject(TOKEN_PUB_SUB) private readonly pubSub: PubSub,
   ) {}
 
@@ -26,7 +29,8 @@ export class ThreadsService {
     await this.chatRepository.findOneAndUpdate(
       {
         _id: chatId,
-        $or: [{ creatorId: userId }, { memberIds: { $in: [userId] } }],
+        ...this.chatsService.filterUserForChat(userId),
+        // $or: [{ creatorId: userId }, { memberIds: { $in: [userId] } }],
       },
       {
         $push: {
@@ -44,8 +48,13 @@ export class ThreadsService {
     return (
       await this.chatRepository.findOne({
         _id: chatId,
-        $or: [{ creatorId: userId }, { memberIds: { $in: [userId] } }],
+        ...this.chatsService.filterUserForChat(userId),
+        // $or: [{ creatorId: userId }, { memberIds: { $in: [userId] } }],
       })
     ).threads;
+  }
+
+  async onThreadCreated({ chatId }: OnThreadCreatedArgs, userId: string) {
+    return this.pubSub.asyncIterator(TRIGGER_ON_THREAD_CREATED);
   }
 }

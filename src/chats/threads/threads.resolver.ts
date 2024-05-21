@@ -37,11 +37,18 @@ export class ThreadsResolver {
   }
 
   @Subscription(() => Thread, {
-    filter: (payload, variables) => {
-      return payload.onThreadCreated.chatId === variables.chatId;
+    filter: (payload, variables, context) => {
+      const userId = context.req.user._id;
+      return (
+        payload.onThreadCreated.chatId === variables.chatId &&
+        userId !== payload.onThreadCreated.userId
+      );
     },
   })
-  onThreadCreated(@Args() _onThreadCreatedArgs: OnThreadCreatedArgs) {
-    return this.pubSub.asyncIterator(TRIGGER_ON_THREAD_CREATED);
+  onThreadCreated(
+    @Args() onThreadCreatedArgs: OnThreadCreatedArgs,
+    @CurrentUser() user: UserDataForToken,
+  ) {
+    return this.threadsService.onThreadCreated(onThreadCreatedArgs, user._id);
   }
 }
