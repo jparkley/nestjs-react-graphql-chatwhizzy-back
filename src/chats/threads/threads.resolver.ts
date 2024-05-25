@@ -7,23 +7,18 @@ import { CreateThreadInput } from './dto/create-thread.input';
 import { CurrentUser } from 'src/auth/user.decorator';
 import { UserDataForToken } from 'src/auth/auth-types';
 import { GetThreadsArgs } from './dto/get-threads.args';
-import { PubSub } from 'graphql-subscriptions';
-import { TOKEN_PUB_SUB } from 'src/constants';
 import { OnThreadCreatedArgs } from './dto/onThreadCreated.args';
 
 @Resolver(() => Thread)
 export class ThreadsResolver {
-  constructor(
-    private readonly threadsService: ThreadsService,
-    @Inject(TOKEN_PUB_SUB) private readonly pubSub: PubSub,
-  ) {}
+  constructor(private readonly threadsService: ThreadsService) {}
 
   @Mutation(() => Thread)
   @UseGuards(GqlGuard)
   createThread(
     @Args('createThreadInput') createThreadInput: CreateThreadInput,
     @CurrentUser() user: UserDataForToken,
-  ) {
+  ): Promise<Thread> {
     return this.threadsService.createThread(createThreadInput, user._id);
   }
 
@@ -32,8 +27,8 @@ export class ThreadsResolver {
   getThreads(
     @Args() getThredsArgs: GetThreadsArgs,
     @CurrentUser() user: UserDataForToken,
-  ) {
-    return this.threadsService.getThreads(getThredsArgs, user._id);
+  ): Promise<Thread[]> {
+    return this.threadsService.getThreads(getThredsArgs);
   }
 
   @Subscription(() => Thread, {
@@ -45,10 +40,7 @@ export class ThreadsResolver {
       );
     },
   })
-  onThreadCreated(
-    @Args() onThreadCreatedArgs: OnThreadCreatedArgs,
-    @CurrentUser() user: UserDataForToken,
-  ) {
-    return this.threadsService.onThreadCreated(onThreadCreatedArgs, user._id);
+  onThreadCreated(@Args() onThreadCreatedArgs: OnThreadCreatedArgs) {
+    return this.threadsService.onThreadCreated(onThreadCreatedArgs);
   }
 }

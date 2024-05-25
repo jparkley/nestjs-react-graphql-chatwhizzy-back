@@ -2,7 +2,8 @@ import { Module, forwardRef } from '@nestjs/common';
 import { ChatsService } from './chats.service';
 import { ChatsResolver } from './chats.resolver';
 import { DatabaseModule } from 'src/common/database/database.module';
-import { Chat, ChatSchema } from './entities/chat.entity';
+import { Chat } from './entities/chat.entity';
+import { ChatSchema } from './entities/chat.document';
 import { ChatRepository } from './chats.repository';
 import { ThreadsModule } from './threads/threads.module';
 
@@ -17,6 +18,6 @@ import { ThreadsModule } from './threads/threads.module';
     forwardRef(() => ThreadsModule),
   ],
   providers: [ChatsResolver, ChatsService, ChatRepository],
-  exports: [ChatRepository, ChatsService],
+  exports: [ChatRepository],
 })
 export class ChatsModule {}

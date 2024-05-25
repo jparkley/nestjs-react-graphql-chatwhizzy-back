@@ -7,56 +7,76 @@ import { GetThreadsArgs } from './dto/get-threads.args';
 import { TOKEN_PUB_SUB, TRIGGER_ON_THREAD_CREATED } from 'src/constants';
 import { PubSub } from 'graphql-subscriptions';
 import { OnThreadCreatedArgs } from './dto/onThreadCreated.args';
-import { ChatsService } from '../chats.service';
+import { ThreadDocument } from './entities/thread.document';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class ThreadsService {
   constructor(
     private readonly chatRepository: ChatRepository,
-    private readonly chatsService: ChatsService,
+    private readonly usersService: UsersService,
     @Inject(TOKEN_PUB_SUB) private readonly pubSub: PubSub,
   ) {}
 
   async createThread({ content, chatId }: CreateThreadInput, userId: string) {
-    const thread: Thread = {
+    const threadDocument: ThreadDocument = {
       _id: new Types.ObjectId(),
       content,
-      userId,
+      userId: new Types.ObjectId(userId),
       createdAt: new Date(),
-      chatId,
     };
 
     await this.chatRepository.findOneAndUpdate(
       {
         _id: chatId,
-        ...this.chatsService.filterUserForChat(userId),
       },
       {
         $push: {
-          threads: thread,
+          threads: threadDocument,
         },
       },
     );
-    this.pubSub.publish(TRIGGER_ON_THREAD_CREATED, {
+
+    const thread: Thread = {
+      ...threadDocument,
+      chatId,
+      user: await this.usersService.findOne(userId),
+    };
+
+    await this.pubSub.publish(TRIGGER_ON_THREAD_CREATED, {
       onThreadCreated: thread,
     });
     return thread;
   }
 
-  async getThreads({ chatId }: GetThreadsArgs, userId: string) {
-    return (
-      await this.chatRepository.findOne({
-        _id: chatId,
-        ...this.chatsService.filterUserForChat(userId),
-      })
-    ).threads;
+  async getThreads({ chatId }: GetThreadsArgs) {
+    return this.chatRepository.model.aggregate([
+      { $match: { _id: new Types.ObjectId(chatId) } },
+      { $unwind: '$threads' },
+      { $replaceRoot: { newRoot: '$threads' } },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'userId',
+          foreignField: '_id',
+          as: 'user',
+        },
+      },
+      { $unwind: '$user' },
+      { $unset: 'userId ' },
+      { $set: { chatId } },
+    ]);
+    // return (
+    //   await this.chatRepository.findOne({
+    //     _id: chatId,
+    //   })
+    // ).threads;
   }
 
-  async onThreadCreated({ chatId }: OnThreadCreatedArgs, userId: string) {
+  async onThreadCreated({ chatId }: OnThreadCreatedArgs) {
     // verify if user has access to chat
     await this.chatRepository.findOne({
       _id: chatId,
-      ...this.chatsService.filterUserForChat(userId),
     });
     return this.pubSub.asyncIterator(TRIGGER_ON_THREAD_CREATED);
   }

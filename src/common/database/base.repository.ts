@@ -5,7 +5,7 @@ import { FilterQuery, Model, Types, UpdateQuery } from 'mongoose';
 export abstract class BaseRepository<T extends BaseEntity> {
   protected abstract readonly logger: Logger;
 
-  constructor(protected readonly model: Model<T>) {}
+  constructor(public readonly model: Model<T>) {}
 
   async create(document: Omit<T, '_id'>): Promise<T> {
     const createDocument = new this.model({

@@ -1,23 +1,19 @@
 import { Field, ObjectType } from '@nestjs/graphql';
-import { Prop, Schema } from '@nestjs/mongoose';
 import { BaseEntity } from 'src/common/database/base.entity';
+import { User } from 'src/users/entities/user.entity';
 
-@Schema()
 @ObjectType()
 export class Thread extends BaseEntity {
-  @Prop()
   @Field()
   content: string;
 
-  @Prop()
+  // need user object to access user info such as avatar
   @Field()
-  userId: string;
+  user: User;
 
-  @Prop()
-  @Field()
+  @Field(() => User)
   createdAt: Date;
 
-  @Prop()
   @Field()
   chatId: string;
 }
