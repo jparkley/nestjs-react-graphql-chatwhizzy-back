@@ -34,11 +34,11 @@ export class ThreadsResolver {
   @Subscription(() => Thread, {
     filter: (payload, variables, context) => {
       const userId = context.req.user._id;
-      const thread: Thread = payload.onThreadCreated
-      
-      return(
+      const thread: Thread = payload.onThreadCreated;
+
+      return (
         thread.chatId === variables.chatId &&
-          userId !== thread.user._id.toHexString(),
+        userId !== thread.user._id.toHexString()
       );
     },
   })
