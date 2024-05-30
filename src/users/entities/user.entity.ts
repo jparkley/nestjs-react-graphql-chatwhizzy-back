@@ -12,6 +12,10 @@ export class User extends BaseEntity {
   email: string;
 
   @Prop()
+  @Field()
+  username: string;
+
+  @Prop()
   password: string;
 }
 
