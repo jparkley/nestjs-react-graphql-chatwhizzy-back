@@ -37,6 +37,7 @@ export class ThreadsService {
       },
     );
 
+    // create graphql thread entity to send to websocket
     const thread: Thread = {
       ...threadDocument,
       chatId,

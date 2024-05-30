@@ -6,7 +6,7 @@ import { ThreadDocument } from '../threads/entities/thread.document';
 @Schema({ versionKey: false })
 export class ChatDocument extends BaseEntity {
   @Prop()
-  creatorId: string;
+  userId: string;
 
   @Prop()
   chatName: string;

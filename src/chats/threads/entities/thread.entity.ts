@@ -8,12 +8,12 @@ export class Thread extends BaseEntity {
   content: string;
 
   // need user object to access user info such as avatar
-  @Field()
-  user: User;
-
   @Field(() => User)
-  createdAt: Date;
+  user: User;
 
   @Field()
   chatId: string;
+
+  @Field()
+  createdAt: Date;
 }

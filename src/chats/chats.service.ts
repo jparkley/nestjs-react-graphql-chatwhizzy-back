@@ -10,7 +10,7 @@ export class ChatsService {
   async create(createChatInput: CreateChatInput, userId: string) {
     return this.chatRepository.create({
       ...createChatInput,
-      creatorId: userId,
+      userId,
       threads: [],
     });
   }
@@ -64,7 +64,7 @@ export class ChatsService {
   filterUserForChat(userId: string) {
     return {
       $or: [
-        { creatorId: userId },
+        { userId: userId },
         { memberIds: { $in: [userId] } },
         { isPrivate: false },
       ],
