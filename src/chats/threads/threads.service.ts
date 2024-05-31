@@ -74,11 +74,7 @@ export class ThreadsService {
     // ).threads;
   }
 
-  async onThreadCreated({ chatId }: OnThreadCreatedArgs) {
-    // verify if user has access to chat
-    await this.chatRepository.findOne({
-      _id: chatId,
-    });
+  async onThreadCreated() {
     return this.pubSub.asyncIterator(TRIGGER_ON_THREAD_CREATED);
   }
 }

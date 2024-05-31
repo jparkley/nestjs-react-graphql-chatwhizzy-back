@@ -32,17 +32,17 @@ export class ThreadsResolver {
   }
 
   @Subscription(() => Thread, {
-    filter: (payload, variables, context) => {
+    filter: (payload, variables: OnThreadCreatedArgs, context) => {
       const userId = context.req.user._id;
       const thread: Thread = payload.onThreadCreated;
 
       return (
-        thread.chatId === variables.chatId &&
+        variables.chatIds.includes(thread.chatId) &&
         userId !== thread.user._id.toHexString()
       );
     },
   })
-  onThreadCreated(@Args() onThreadCreatedArgs: OnThreadCreatedArgs) {
-    return this.threadsService.onThreadCreated(onThreadCreatedArgs);
+  onThreadCreated(@Args() _onThreadCreatedArgs: OnThreadCreatedArgs) {
+    return this.threadsService.onThreadCreated();
   }
 }
