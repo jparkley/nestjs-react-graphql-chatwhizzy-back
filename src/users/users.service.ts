@@ -3,10 +3,15 @@ import * as bcrypt from 'bcrypt';
 import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
 import { UserRepository } from './users.repository';
+import { S3Service } from 'src/common/s3/s3.service';
+import { BUCKET, PROFILE_IMAGE_TYPE } from 'src/constants';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly userRepository: UserRepository) {}
+  constructor(
+    private readonly userRepository: UserRepository,
+    private readonly s3Service: S3Service,
+  ) {}
 
   async create(createUserInput: CreateUserInput) {
     try {
@@ -56,5 +61,13 @@ export class UsersService {
       throw new UnauthorizedException('Password is not valid');
     }
     return user;
+  }
+
+  async uploadImage(file: Buffer, userId: string) {
+    await this.s3Service.upload({
+      bucket: BUCKET,
+      key: `${userId}.${PROFILE_IMAGE_TYPE}`,
+      file,
+    });
   }
 }
