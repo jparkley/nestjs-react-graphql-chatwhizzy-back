@@ -8,6 +8,7 @@ ChatWhizzy Backend in Nest.js, GraphQL, MongoDB
 - Validation Pipe (built-in class-validator)
 - Development logger: Pino
 - Authentication & Authorization: Passport, Guard, JWT
+- AWS S3 (storage for user files), AWS SDK
 
 [ChatWhizzy Frontend](https://github.com/jparkley/nestjs-react-graphql-chatwhizzy-front)
 
