@@ -21,12 +21,12 @@ export class UsersController {
   @UseGuards(JwtGuard)
   @Post('image')
   // nestjs file interceptor to extract file from req
-  @UseInterceptors(FileInterceptor('File'))
+  @UseInterceptors(FileInterceptor('file'))
   async uploadImage(
     @UploadedFile(
       new ParseFilePipe({
         validators: [
-          new MaxFileSizeValidator({ maxSize: 100000 }),
+          new MaxFileSizeValidator({ maxSize: 1024 * 1024 }),
           new FileTypeValidator({ fileType: 'image/jpeg' }),
         ],
       }),
