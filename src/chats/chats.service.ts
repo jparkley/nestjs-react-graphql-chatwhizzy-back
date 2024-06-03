@@ -3,10 +3,14 @@ import { CreateChatInput } from './dto/create-chat.input';
 import { UpdateChatInput } from './dto/update-chat.input';
 import { ChatRepository } from './chats.repository';
 import { PipelineStage, Types } from 'mongoose';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class ChatsService {
-  constructor(private readonly chatRepository: ChatRepository) {}
+  constructor(
+    private readonly chatRepository: ChatRepository,
+    private readonly usersService: UsersService,
+  ) {}
   async create(createChatInput: CreateChatInput, userId: string) {
     return this.chatRepository.create({
       ...createChatInput,
@@ -34,7 +38,9 @@ export class ChatsService {
         delete chat.latestThread;
         return;
       }
-      chat.latestThread.user = chat.latestThread.user[0];
+      chat.latestThread.user = this.usersService.transferToEntity(
+        chat.latestThread.user[0],
+      );
       delete chat.latestThread.userId;
       chat.latestThread.chatId = chat._id;
     });

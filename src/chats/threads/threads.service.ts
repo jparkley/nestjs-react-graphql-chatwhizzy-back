@@ -51,7 +51,7 @@ export class ThreadsService {
   }
 
   async getThreads({ chatId }: GetThreadsArgs) {
-    return this.chatRepository.model.aggregate([
+    const threads = await this.chatRepository.model.aggregate([
       { $match: { _id: new Types.ObjectId(chatId) } },
       { $unwind: '$threads' },
       { $replaceRoot: { newRoot: '$threads' } },
@@ -67,6 +67,11 @@ export class ThreadsService {
       { $unset: 'userId ' },
       { $set: { chatId } },
     ]);
+
+    for (const thread of threads) {
+      thread.user = this.usersService.transferToEntity(thread.user);
+    }
+    return threads;
     // return (
     //   await this.chatRepository.findOne({
     //     _id: chatId,

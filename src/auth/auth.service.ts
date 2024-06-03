@@ -19,9 +19,8 @@ export class AuthService {
     );
 
     const data: UserDataForToken = {
+      ...user,
       _id: user._id.toHexString(),
-      email: user.email,
-      username: user.username,
     };
 
     const token = this.jwtService.sign(data);

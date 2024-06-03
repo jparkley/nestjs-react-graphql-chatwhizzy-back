@@ -5,6 +5,8 @@ import { UpdateUserInput } from './dto/update-user.input';
 import { UserRepository } from './users.repository';
 import { S3Service } from 'src/common/s3/s3.service';
 import { BUCKET, PROFILE_IMAGE_TYPE } from 'src/constants';
+import { UserDataForToken } from 'src/auth/auth-types';
+import { UserDocument } from './entities/user.document';
 
 @Injectable()
 export class UsersService {
@@ -19,7 +21,7 @@ export class UsersService {
         ...createUserInput,
         password: await bcrypt.hash(createUserInput.password, 10),
       });
-      return newUser;
+      return this.transferToEntity(newUser);
     } catch (error) {
       const message =
         error.code == '11000' ? 'Email already exists' : error.message;
@@ -28,11 +30,13 @@ export class UsersService {
   }
 
   async findAll() {
-    return await this.userRepository.find({});
+    return (await this.userRepository.find({})).map((user) =>
+      this.transferToEntity(user),
+    );
   }
 
   async findOne(_id: string) {
-    return await this.userRepository.findOne({ _id });
+    return this.transferToEntity(await this.userRepository.findOne({ _id }));
   }
 
   async update(_id: string, updateUserInput: UpdateUserInput) {
@@ -42,16 +46,19 @@ export class UsersService {
         10,
       );
     }
-    return this.userRepository.findOneAndUpdate(
+    const user = await this.userRepository.findOneAndUpdate(
       { _id },
       {
         $set: { ...updateUserInput },
       },
     );
+    return this.transferToEntity(user);
   }
 
   async remove(_id: string) {
-    return this.userRepository.findOneAndDelete({ _id });
+    return this.transferToEntity(
+      await this.userRepository.findOneAndDelete({ _id }),
+    );
   }
 
   async validateUser(email: string, password: string) {
@@ -60,14 +67,30 @@ export class UsersService {
     if (!passwordCheck) {
       throw new UnauthorizedException('Password is not valid');
     }
-    return user;
+    return this.transferToEntity(user);
+  }
+
+  private getProfileImage(userId: string) {
+    return `${userId}.${PROFILE_IMAGE_TYPE}`;
   }
 
   async uploadImage(file: Buffer, userId: string) {
     await this.s3Service.upload({
       bucket: BUCKET,
-      key: `${userId}.${PROFILE_IMAGE_TYPE}`,
+      key: this.getProfileImage(userId),
       file,
     });
+  }
+
+  transferToEntity(userDocument: UserDocument) {
+    const user = {
+      ...userDocument,
+      imageUrl: this.s3Service.getImageUrl(
+        BUCKET,
+        this.getProfileImage(userDocument._id.toHexString()),
+      ),
+    };
+    delete user.password;
+    return user;
   }
 }
