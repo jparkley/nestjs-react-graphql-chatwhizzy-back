@@ -15,7 +15,9 @@ export class S3Service {
     const accessKeyId = configService.get('AWS_ACCESS_KEY');
     const secretAccessKey = configService.get('AWS_SECRET_ACCESS_KEY');
 
-    const s3ClientConfig: S3ClientConfig = {};
+    const s3ClientConfig: S3ClientConfig = {
+      region: configService.get('AWS_REGION'),
+    };
     // for local dev
     if (accessKeyId && secretAccessKey) {
       s3ClientConfig.credentials = { accessKeyId, secretAccessKey };
