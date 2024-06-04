@@ -29,6 +29,8 @@ export class AuthService {
       httpOnly: true, // only during http requests
       expires,
     });
+
+    return token;
   }
 
   logout(response: Response) {
