@@ -4,6 +4,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Request } from 'express';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { UserDataForToken } from '../auth-types';
+import { getJwtAuthorizationHeader } from '../jwt-header';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -15,10 +16,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
           if (request.cookies.Authentication) {
             return request.cookies.Authentication;
           }
-          const authorization = request.headers.authorization;
-          if (authorization && authorization.startsWith('Bearer')) {
-            return authorization.substring(7, authorization.length);
-          }
+
+          return getJwtAuthorizationHeader(request.headers.authorization);
         },
       ]),
       secretOrKey: configService.getOrThrow('JWT_TOKEN'),

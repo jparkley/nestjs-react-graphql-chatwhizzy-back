@@ -4,6 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Request, Response } from 'express';
 import { User } from 'src/users/entities/user.entity';
 import { UserDataForToken } from './auth-types';
+import { getJwtAuthorizationHeader } from './jwt-header';
 
 @Injectable()
 export class AuthService {
@@ -40,12 +41,14 @@ export class AuthService {
     });
   }
 
-  verifyWsJWT(request: Request): UserDataForToken {
-    const cookies: string[] = request.headers.cookie.split('; ');
-    const authCookie = cookies.find((cookie) =>
+  verifyWsJWT(request: Request, connectionParams: any = {}): UserDataForToken {
+    const cookies: string[] = request.headers.cookie?.split('; ');
+    const authCookie = cookies?.find((cookie) =>
       cookie.includes('Authentication'),
     );
-    const jwt = authCookie.split('Authentication=')[1];
-    return this.jwtService.verify(jwt);
+    const jwt = authCookie?.split('Authentication=')[1];
+    return this.jwtService.verify(
+      jwt || getJwtAuthorizationHeader(connectionParams.token),
+    );
   }
 }

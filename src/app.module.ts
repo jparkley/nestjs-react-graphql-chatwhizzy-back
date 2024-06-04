@@ -33,7 +33,10 @@ import { AuthService } from './auth/auth.service';
               // With execution context, extract jwt manually from incoming request for verification
               try {
                 const request = context.extra.request;
-                const user = authService.verifyWsJWT(request);
+                const user = authService.verifyWsJWT(
+                  request,
+                  context.connectionParams,
+                );
                 context.user = user;
               } catch (error) {
                 new Logger().error(error);
