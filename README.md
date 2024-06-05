@@ -10,6 +10,10 @@ ChatWhizzy Backend in Nest.js, GraphQL, MongoDB
 - Authentication & Authorization: Passport, Guard, JWT
 - AWS S3 (storage for user files), AWS SDK
 
+## Deployment
+
+- Deployed on AWS Elastic Beanstalk with CodePipeline
+
 [ChatWhizzy Frontend](https://github.com/jparkley/nestjs-react-graphql-chatwhizzy-front)
 
 #### Notes
