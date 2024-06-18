@@ -1,0 +1,13 @@
+node_modules
+test
+dist
+.env.production
+.gitignore
+.git
+.env
+.npmrc
+.prettierrc
+buildspec.yml
+Dockerfile
+Procfile
+README.md
